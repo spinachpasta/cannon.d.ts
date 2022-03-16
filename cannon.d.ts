@@ -1,9 +1,17 @@
-﻿declare module CANNON {
+// Type definitions for cannon 0.1
+// Project: https://github.com/clark-stevenson/cannon.d.ts
+// Definitions by: Clark Stevenson <https://github.com/clark-stevenson>
+//                 Grzegorz Rozdzialik <https://github.com/Gelio>
+//                 Sean Bradley <https://github.com/Sean-Bradley>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+
+
+declare module CANNON {
 
     export interface IAABBOptions {
 
-        upperBound?: Vec3;
-        lowerBound?: Vec3;
+        upperBound?: Vec3 | undefined;
+        lowerBound?: Vec3 | undefined;
 
     }
 
@@ -14,14 +22,15 @@
 
         constructor(options?: IAABBOptions);
 
-        clone() : AABB;
-        setFromPoints(points: Vec3[], position?: Vec3, quaternion?: Quaternion, skinSize?: number): void;
+        clone(): AABB;
         copy(aabb: AABB): void;
         extend(aabb: AABB): void;
-        getCorners( a: Vec3, b: Vec3, c: Vec3, d: Vec3, e: Vec3, f: Vec3, g: Vec3, h: Vec3 ) : void;
+        getCorners(a: Vec3, b: Vec3, c: Vec3, d: Vec3, e: Vec3, f: Vec3, g: Vec3, h: Vec3): void;
         overlaps(aabb: AABB): boolean;
-        toLocalFrame( frame: Transform, target: AABB ) : AABB;
-        toWorldFrame( frame: Transform, target: AABB ) : AABB;
+        setFromPoints(points: Vec3[], position?: Vec3, quaternion?: Quaternion, skinSize?: number): AABB;
+        toLocalFrame(frame: Transform, target: AABB): AABB;
+        toWorldFrame(frame: Transform, target: AABB): AABB;
+
     }
 
     export class ArrayCollisionMatrix {
@@ -29,13 +38,13 @@
         matrix: Mat3[];
 
         get(i: number, j: number): number;
-        set(i: number, j: number, value?: number): void;
+        set(i: number, j: number, value: number): void;
         reset(): void;
         setNumObjects(n: number): void;
 
     }
 
-    export class Broadphase {
+    export class BroadPhase {
 
         world: World;
         useBoundingBoxes: boolean;
@@ -53,7 +62,7 @@
 
     }
 
-    export class GridBroadphase extends Broadphase {
+    export class GridBroadphase extends BroadPhase {
 
         nx: number;
         ny: number;
@@ -66,7 +75,7 @@
 
     }
 
-    export class NaiveBroadphase extends Broadphase {
+    export class NaiveBroadphase extends BroadPhase {
     }
 
     export class ObjectCollisionMatrix {
@@ -80,42 +89,16 @@
 
     }
 
-    export interface IRayIntersectWorldOptions {
-
-        mode: number;
-        result: boolean;
-        skipBackfaces: boolean;
-        collisionFilterMask: number;
-        collisionFilterGroup: number;
-        from: Vec3;
-        to: Vec3;
-        callback: Function;
-
-    }
-
     export class Ray {
-
-        static CLOSEST: number;
-        static ANY: number;
-        static ALL: number;
 
         from: Vec3;
         to: Vec3;
         precision: number;
         checkCollisionResponse: boolean;
-        callback: Function;
-        collisionFilterGroup: number;
-        collisionFilterMask: number;
-        hasHit: boolean;
-        mode: number;
-        result: RaycastResult;
-        skipBackfaces: boolean;
 
         constructor(from?: Vec3, to?: Vec3);
 
         getAABB(result: RaycastResult): void;
-        intersectBodies(bodies: Body[], result?: RaycastResult): void;
-        intersectWorld(world: World, options: IRayIntersectWorldOptions): boolean;
 
     }
 
@@ -125,19 +108,17 @@
         rayToWorld: Vec3;
         hitNormalWorld: Vec3;
         hitPointWorld: Vec3;
-        hitFaceIndex: number;
         hasHit: boolean;
         shape: Shape;
         body: Body;
         distance: number;
 
-        abort(): void;
         reset(): void;
         set(rayFromWorld: Vec3, rayToWorld: Vec3, hitNormalWorld: Vec3, hitPointWorld: Vec3, shape: Shape, body: Body, distance: number): void;
 
     }
 
-    export class SAPBroadphase extends Broadphase {
+    export class SAPBroadphase extends BroadPhase {
 
         static insertionSortX(a: any[]): any[];
         static insertionSortY(a: any[]): any[];
@@ -157,8 +138,8 @@
 
     export interface IConstraintOptions {
 
-        collideConnected?: boolean;
-        wakeUpBodies?: boolean;
+        collideConnected?: boolean | undefined;
+        wakeUpBodies?: boolean | undefined;
 
     }
 
@@ -180,74 +161,65 @@
 
     export class DistanceConstraint extends Constraint {
 
-        distance: number;
-        distanceEquation: ContactEquation;
-
-        constructor(bodyA: Body, bodyB: Body, distance?: number, maxForce?: number);
+        constructor(bodyA: Body, bodyB: Body, distance: number, maxForce?: number);
 
     }
 
     export interface IHingeConstraintOptions {
 
-        pivotA?: Vec3;
-        axisA?: Vec3;
-        pivotB?: Vec3;
-        axisB?: Vec3;
-        maxForce?: number;
+        pivotA?: Vec3 | undefined;
+        axisA?: Vec3 | undefined;
+        pivotB?: Vec3 | undefined;
+        axisB?: Vec3 | undefined;
+        maxForce?: number | undefined;
 
     }
 
     export class HingeConstraint extends Constraint {
 
-        axisA: Vec3;
-        axisB: Vec3;
-        rotationalEquation1: RotationalEquation;
-        rotationalEquation2: RotationalEquation;
         motorEnabled: boolean;
         motorTargetVelocity: number;
         motorMinForce: number;
         motorMaxForce: number;
         motorEquation: RotationalMotorEquation;
+        axisA: Vec3;
+        axisB: Vec3;
 
         constructor(bodyA: Body, bodyB: Body, options?: IHingeConstraintOptions);
 
         enableMotor(): void;
         disableMotor(): void;
-        setMotorMaxForce(maxForce: number): void;
         setMotorSpeed(speed: number): void;
 
     }
 
     export class PointToPointConstraint extends Constraint {
 
-        equationX: ContactEquation;
-        equationY: ContactEquation;
-        equationZ: ContactEquation;
-        pivotA: Vec3;
-        pivotB: Vec3;
-
         constructor(bodyA: Body, pivotA: Vec3, bodyB: Body, pivotB: Vec3, maxForce?: number);
 
     }
 
-    export class ConeTwistConstraint extends PointToPointConstraint {
-
-        coneEquation: ConeEquation;
-        twistEquation: RotationalEquation;
-
-        constructor(bodyA: Body, bodyB: Body, options?: IHingeConstraintOptions);
-
+    export interface ILockConstraintOptions {
+        maxForce?: number | undefined;
     }
 
-    export class LockConstraint extends PointToPointConstraint {
-
-        rotationalEquation1: RotationalEquation;
-        rotationalEquation2: RotationalEquation;
-        rotationalEquation3: RotationalEquation;
-
-        constructor(bodyA: Body, bodyB: Body, maxForce?: number);
-
+    export class LockConstraint extends Constraint {
+        constructor(bodyA: Body, bodyB: Body, options?: ILockConstraintOptions);
     }
+
+    export interface IConeTwistConstraintOptions {
+        pivotA?: Vec3 | undefined;
+        pivotB?: Vec3 | undefined;
+        axisA?: Vec3 | undefined;
+        axisB?: Vec3 | undefined;
+        maxForce?: number | undefined;
+    }
+
+    export class ConeTwistConstraint extends Constraint {
+        constructor(bodyA: Body, bodyB: Body, options?: IConeTwistConstraintOptions);
+    }
+
+
 
     export class Equation {
 
@@ -274,20 +246,12 @@
         computeGiMGt(): number;
         addToWlamda(deltalambda: number): number;
         computeC(): number;
-        computeInvC( eps: number ): number;
+
     }
 
     export class FrictionEquation extends Equation {
 
         constructor(bi: Body, bj: Body, slipForce: number);
-
-    }
-
-    export interface IRotationalEquationOptions {
-
-        axisA?: Vec3;
-        axisB?: Vec3;
-        maxForce?: number;
 
     }
 
@@ -302,7 +266,7 @@
         relVel: Vec3;
         relForce: Vec3;
 
-        constructor(bodyA: Body, bodyB: Body, options?: IRotationalEquationOptions);
+        constructor(bodyA: Body, bodyB: Body);
 
     }
 
@@ -318,43 +282,32 @@
 
     }
 
-    export interface IConeEquationOptions {
-
-        axisA?: Vec3;
-        axisB?: Vec3;
-        maxForce?: number;
-
-    }
-
-    export class ConeEquation extends Equation {
-
-        angle: number;
-
-        constructor(bodyA: Body, bodyB: Body, options?: IConeEquationOptions);
-
-    }
-
     export class ContactEquation extends Equation {
 
         restitution: number;
         ri: Vec3;
         rj: Vec3;
+        penetrationVec: Vec3;
         ni: Vec3;
+        rixn: Vec3;
+        rjxn: Vec3;
+        invIi: Mat3;
+        invIj: Mat3;
+        biInvInertiaTimesRixn: Vec3;
+        bjInvInertiaTimesRjxn: Vec3;
 
         constructor(bi: Body, bj: Body);
-
-        getImpactVelocityAlongNormal(): number;
 
     }
 
     export interface IContactMaterialOptions {
 
-        friction?: number;
-        restitution?: number;
-        contactEquationStiffness?: number;
-        contactEquationRelaxation?: number;
-        frictionEquationStiffness?: number;
-        frictionEquationRelaxation?: number;
+        friction?: number | undefined;
+        restitution?: number | undefined;
+        contactEquationStiffness?: number | undefined;
+        contactEquationRelaxation?: number | undefined;
+        frictionEquationStiffness?: number | undefined;
+        frictionEquationRelaxation?: number | undefined;
 
     }
 
@@ -373,13 +326,6 @@
 
     }
 
-    export interface IMaterialOptions {
-
-        friction?: number;
-        restitution?: number;
-
-    }
-
     export class Material {
 
         name: string;
@@ -387,7 +333,7 @@
         friction:number;
         restitution:number;
 
-        constructor(options?: string|IMaterialOptions);
+        constructor(name: string);
 
     }
 
@@ -402,8 +348,6 @@
     }
 
     export class Mat3 {
-
-        elements: number[];
 
         constructor(elements?: number[]);
 
@@ -422,38 +366,6 @@
         reverse(target?: Mat3): Mat3;
         setRotationFromQuaternion(q: Quaternion): Mat3;
         transpose(target?: Mat3): Mat3;
-
-    }
-
-    export class Trimesh extends Shape {
-
-        aabb: AABB;
-        edges: number[];
-        indices: number[];
-        normals: number[];
-        scale: Vec3;
-        tree: Octree;
-        vertices: number[];
-
-        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
-        static createTorus(radius?: number, tube?: number, radialSegments?: number, tubularSegments?: number, arc?: number): Trimesh;
-
-        constructor(vertices: number[], indices: number[]);
-
-        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
-        computeLocalAABB(aabb: AABB): void;
-        getEdgeVector(edgeIndex: number, vectorStore: Vec3): void;
-        getEdgeVertex(edgeIndex: number, firstOrSecond: number, vertexStore: Vec3): void;
-        getNormal(i: number, target: Vec3): Vec3;
-        getTrianglesAABB(aabb: AABB, result: number[]): void;
-        getTriangleVertices(i: number, a: Vec3, b: Vec3, c: Vec3): void;
-        getVertex(i: number, out: Vec3): Vec3;
-        getWorldVertex(i: number, pos: Vec3, quat: Quaternion, out: Vec3): Vec3;
-        setScale(scale: Vec3): void;
-        updateAABB(): void;
-        updateEdges(): void;
-        updateNormals(): void;
-        updateTree(): void;
 
     }
 
@@ -489,23 +401,18 @@
 
         static pointToLocalFrame(position: Vec3, quaternion: Quaternion, worldPoint: Vec3, result?: Vec3): Vec3;
         static pointToWorldFrame(position: Vec3, quaternion: Quaternion, localPoint: Vec3, result?: Vec3): Vec3;
-        static vectorToWorldFrame(quaternion: Quaternion, localVector: Vec3, result: Vec3): Vec3;
-        static vectorToLocalFrame(position: Vec3, quaternion: Quaternion, worldVector: Vec3, result?: Vec3): Vec3;
 
         position: Vec3;
         quaternion: Quaternion;
 
-        pointToLocal(point: Vec3, result: Vec3): Vec3;
-        pointToWorld(point: Vec3, result: Vec3): Vec3;
+        vectorToWorldFrame(localVector: Vec3, result?: Vec3): Vec3;
+        vectorToLocalFrame(position: Vec3, quaternion: Quaternion, worldVector: Vec3, result?: Vec3): Vec3;
 
     }
 
     export class Vec3 {
 
         static ZERO: Vec3;
-        static UNIT_X: Vec3;
-        static UNIT_Y: Vec3;
-        static UNIT_Z: Vec3;
 
         x: number;
         y: number;
@@ -524,7 +431,6 @@
         norm(): number;
         norm2(): number;
         distanceTo(p: Vec3): number;
-        distanceSquared(p: Vec3): number;
         mult(scalar: number, target?: Vec3): Vec3;
         scale(scalar: number, target?: Vec3): Vec3;
         dot(v: Vec3): number;
@@ -534,8 +440,6 @@
         toString(): string;
         toArray(): number[];
         copy(source: Vec3): Vec3;
-        length(): number;
-        lengthSquared(): number;
         lerp(v: Vec3, t: number, target?: Vec3): void;
         almostEquals(v: Vec3, precision?: number): boolean;
         almostZero(precision?: number): boolean;
@@ -545,24 +449,22 @@
     }
 
     export interface IBodyOptions {
-
-        position?: Vec3;
-        velocity?: Vec3;
-        angularVelocity?: Vec3;
-        quaternion?: Quaternion;
-        mass?: number;
-        material?: Material;
-        type?: number;
-        linearDamping?: number;
-        angularDamping?: number;
-        allowSleep?: boolean;
-        sleepSpeedLimit?: number;
-        sleepTimeLimit?: number;
-        collisionFilterGroup?: number;
-        collisionFilterMask?: number;
-        fixedRotation?: boolean;
-        shape?: Shape;
-
+        position?: Vec3 | undefined;
+        velocity?: Vec3 | undefined;
+        angularVelocity?: Vec3 | undefined;
+        quaternion?: Quaternion | undefined;
+        mass?: number | undefined;
+        material?: Material | undefined;
+        type?: number | undefined;
+        linearDamping?: number | undefined;
+        angularDamping?: number | undefined;
+        allowSleep?: boolean | undefined;
+        sleepSpeedLimit?: number | undefined;
+        sleepTimeLimit?: number | undefined;
+        collisionFilterGroup?: number | undefined;
+        collisionFilterMask?: number | undefined;
+        fixedRotation?: boolean | undefined;
+        shape?: Shape | undefined;
     }
 
     export class Body extends EventTarget {
@@ -587,7 +489,6 @@
         position: Vec3;
         previousPosition: Vec3;
         initPosition: Vec3;
-        boundingRadius: number;
         velocity: Vec3;
         initVelocity: Vec3;
         force: Vec3;
@@ -628,109 +529,108 @@
         wakeUp(): void;
         sleep(): void;
         sleepTick(time: number): void;
+        updateSolveMassProperties(): void;
         pointToLocalFrame(worldPoint: Vec3, result?: Vec3): Vec3;
         pointToWorldFrame(localPoint: Vec3, result?: Vec3): Vec3;
-        vectorToLocalFrame(worldPoint: Vec3, result?: Vec3): Vec3;
         vectorToWorldFrame(localVector: Vec3, result?: Vec3): Vec3;
-        addShape(shape: Shape, offset?: Vec3, orientation?: Vec3): void;
+        addShape(shape: Shape, offset?: Vec3, orientation?: Quaternion): void;
+        updateBoundingRadius(): void;
         computeAABB(): void;
+        updateInertiaWorld(force: Vec3): void;
         applyForce(force: Vec3, worldPoint: Vec3): void;
         applyImpulse(impulse: Vec3, worldPoint: Vec3): void;
         applyLocalForce(force: Vec3, localPoint: Vec3): void;
-        applyLocalImplse(impulse: Vec3, localPoint: Vec3): void;
-        updateBoundingRadius(): void;
+        applyLocalImpulse(impulse: Vec3, localPoint: Vec3): void;
         updateMassProperties(): void;
-        updateInertiaWorld(force: Vec3): void;
-        updateSolveMassProperties(): void;
         getVelocityAtWorldPoint(worldPoint: Vec3, result: Vec3): Vec3;
-
-    }
-
-    export interface IWheelInfoOptions {
-
-        chassisConnectionPointLocal?: Vec3;
-        chassisConnectionPointWorld?: Vec3;
-        directionLocal?: Vec3;
-        directionWorld?: Vec3;
-        axleLocal?: Vec3;
-        axleWorld?: Vec3;
-        suspensionRestLength?: number;
-        suspensionMaxLength?: number;
-        radius?: number;
-        suspensionStiffness?: number;
-        dampingCompression?: number;
-        dampingRelaxation?: number;
-        frictionSlip?: number;
-        steering?: number;
-        rotation?: number;
-        deltaRotation?: number;
-        rollInfluence?: number;
-        maxSuspensionForce?: number;
-        isFrontWheel?: boolean;
-        clippedInvContactDotSuspension?: number;
-        suspensionRelativeVelocity?: number;
-        suspensionForce?: number;
-        skidInfo?: number;
-        suspensionLength?: number;
-        maxSuspensionTravel?: number;
-        useCustomSlidingRotationalSpeed?: boolean;
-        customSlidingRotationalSpeed?: number;
-
-        position?: Vec3;
-        direction?: Vec3;
-        axis?: Vec3;
-        body?: Body;
-
-    }
-
-    export class WheelInfo {
-
-        axleLocal: Vec3;
-        axleWorld: Vec3;
-        brake: number;
-        chassisConnectionPointLocal: Vec3;
-        chassisConnectionPointWorld: Vec3;
-        clippedInvContactDotSuspension: number;
-        customSlidingRotationalSpeed: number;
-        dampingCompression: number;
-        dampingRelaxation: number;
-        deltaRotation: number;
-        directionLocal: Vec3;
-        directionWorld: Vec3;
-        engineForce: number;
-        forwardImpulse: number;
-        frictionSlip: number;
-        isFrontWheel: boolean;
-        isInContact: boolean;
-        maxSuspensionForce: number;
-        maxSuspensionTravel: number;
-        radius: number;
-        raycastResult: RaycastResult;
-        rollInfluence: number;
-        rotation: number;
-        sideImpulse: number;
-        skidInfo: number;
-        sliding: boolean;
-        steering: number;
-        suspensionForce: number;
-        suspensionLength: number;
-        suspensionMaxLength: number;
-        suspensionRelativeVelocity: number;
-        suspensionStiffness: number;
-        suspensionRestLength: number;
-        useCustomSlidingRotationalSpeed: boolean;
-        worldTransform: Transform;
-
-        constructor(options?: IWheelInfoOptions);
 
     }
 
     export interface IRaycastVehicleOptions {
 
-        chassisBody?: Body;
-        indexRightAxis?: number;
-        indexLeftAxis?: number;
-        indexUpAxis?: number;
+        chassisBody?: Body | undefined;
+        indexRightAxis?: number | undefined;
+        indexLeftAxis?: number | undefined;
+        indexUpAxis?: number | undefined;
+
+    }
+
+    export interface IWheelInfoOptions {
+
+        chassisConnectionPointLocal?: Vec3 | undefined;
+        chassisConnectionPointWorld?: Vec3 | undefined;
+        directionLocal?: Vec3 | undefined;
+        directionWorld?: Vec3 | undefined;
+        axleLocal?: Vec3 | undefined;
+        axleWorld?: Vec3 | undefined;
+        suspensionRestLength?: number | undefined;
+        suspensionMaxLength?: number | undefined;
+        radius?: number | undefined;
+        suspensionStiffness?: number | undefined;
+        dampingCompression?: number | undefined;
+        dampingRelaxation?: number | undefined;
+        frictionSlip?: number | undefined;
+        steering?: number | undefined;
+        rotation?: number | undefined;
+        deltaRotation?: number | undefined;
+        rollInfluence?: number | undefined;
+        maxSuspensionForce?: number | undefined;
+        isFronmtWheel?: boolean | undefined;
+        clippedInvContactDotSuspension?: number | undefined;
+        suspensionRelativeVelocity?: number | undefined;
+        suspensionForce?: number | undefined;
+        skidInfo?: number | undefined;
+        suspensionLength?: number | undefined;
+        maxSuspensionTravel?: number | undefined;
+        useCustomSlidingRotationalSpeed?: boolean | undefined;
+        customSlidingRotationalSpeed?: number | undefined;
+
+        position?: Vec3 | undefined;
+        direction?: Vec3 | undefined;
+        axis?: Vec3 | undefined;
+        body?: Body | undefined;
+
+    }
+
+    export class WheelInfo {
+
+        maxSuspensionTravbel: number;
+        customSlidingRotationalSpeed: number;
+        useCustomSlidingRotationalSpeed: boolean;
+        sliding: boolean;
+        chassisConnectionPointLocal: Vec3;
+        chassisConnectionPointWorld: Vec3;
+        directionLocal: Vec3;
+        directionWorld: Vec3;
+        axleLocal: Vec3;
+        axleWorld: Vec3;
+        suspensionRestLength: number;
+        suspensionMaxLength: number;
+        radius: number;
+        suspensionStiffness: number;
+        dampingCompression: number;
+        dampingRelaxation: number;
+        frictionSlip: number;
+        steering: number;
+        rotation: number;
+        deltaRotation: number;
+        rollInfluence: number;
+        maxSuspensionForce: number;
+        engineForce: number;
+        brake: number;
+        isFrontWheel: boolean;
+        clippedInvContactDotSuspension: number;
+        suspensionRelativeVelocity: number;
+        suspensionForce: number;
+        skidInfo: number;
+        suspensionLength: number;
+        sideImpulse: number;
+        forwardImpulse: number;
+        raycastResult: RaycastResult;
+        worldTransform: Transform;
+        isInContact: boolean;
+
+        constructor(options?: IWheelInfoOptions);
 
     }
 
@@ -813,13 +713,13 @@
 
     export interface ISpringOptions {
 
-        restLength?: number;
-        stiffness?: number;
-        damping?: number;
-        worldAnchorA?: Vec3;
-        worldAnchorB?: Vec3;
-        localAnchorA?: Vec3;
-        localAnchorB?: Vec3;
+        restLength?: number | undefined;
+        stiffness?: number | undefined;
+        damping?: number | undefined;
+        worldAnchorA?: Vec3 | undefined;
+        worldAnchorB?: Vec3 | undefined;
+        localAnchorA?: Vec3 | undefined;
+        localAnchorB?: Vec3 | undefined;
 
     }
 
@@ -847,13 +747,18 @@
 
         static calculateInertia(halfExtents: Vec3, mass: number, target: Vec3): void;
 
+        boundingSphereRadius: number;
+        collisionResponse: boolean;
         halfExtents: Vec3;
         convexPolyhedronRepresentation: ConvexPolyhedron;
 
         constructor(halfExtents: Vec3);
 
         updateConvexPolyhedronRepresentation(): void;
+        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
         getSideNormals(sixTargetVectors: boolean, quat?: Quaternion): Vec3[];
+        updateBoundingSphereRadius(): number;
+        volume(): number;
         forEachWorldCorner(pos: Vec3, quat: Quaternion, callback: Function): void;
 
     }
@@ -862,23 +767,21 @@
 
         static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
         static project(hull: ConvexPolyhedron, axis: Vec3, pos: Vec3, quat: Quaternion, result: number[]): void;
-        static getFaceNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
 
         vertices: Vec3[];
         worldVertices: Vec3[];
         worldVerticesNeedsUpdate: boolean;
-        faces: number[];
+        faces: number[][];
         faceNormals: Vec3[];
         uniqueEdges: Vec3[];
-        uniqueAxes: Vec3[];
 
-        constructor(points?: Vec3[], faces?: number[]);
+        constructor(points?: Vec3[], faces?: number[][]);
 
         computeEdges(): void;
         computeNormals(): void;
         getFaceNormal(i: number, target: Vec3): Vec3;
         clipAgainstHull(posA: Vec3, quatA: Quaternion, hullB: Vec3, quatB: Quaternion, separatingNormal: Vec3, minDist: number, maxDist: number, result: any[]): void;
-        findSeparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA: any[], faceListB: any[]): boolean;
+        findSaparatingAxis(hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion, target: Vec3, faceListA: any[], faceListB: any[]): boolean;
         testSepAxis(axis: Vec3, hullB: ConvexPolyhedron, posA: Vec3, quatA: Quaternion, posB: Vec3, quatB: Quaternion): number;
         getPlaneConstantOfFace(face_i: number): number;
         clipFaceAgainstHull(separatingNormal: Vec3, posA: Vec3, quatA: Quaternion, worldVertsB1: Vec3[], minDist: number, maxDist: number, result: any[]): void;
@@ -893,23 +796,23 @@
 
     }
 
-    export class Cylinder extends ConvexPolyhedron {
+    export class Cylinder extends Shape {
 
         constructor(radiusTop: number, radiusBottom: number, height: number, numSegments: number);
 
     }
 
-    export interface IHightfieldOptions {
+    export interface IHightfield {
 
-        minValue?: number;
-        maxValue?: number;
+        minValue?: number | undefined;
+        maxValue?: number | undefined;
         elementSize: number;
 
     }
 
     export class Heightfield extends Shape {
 
-        data: number[];
+        data: number[][];
         maxValue: number;
         minValue: number;
         elementSize: number;
@@ -918,7 +821,7 @@
         pillarOffset: Vec3;
         type: number;
 
-        constructor(data: number[], options?: IHightfieldOptions);
+        constructor(data: number[], options?: IHightfield);
 
         update(): void;
         updateMinValue(): void;
@@ -945,6 +848,35 @@
 
     }
 
+    export class Trimesh extends Shape {
+
+        vertices: number[]
+        indices: number[]
+        scale: Vec3
+
+        constructor(vertices: number[], indices: number[]);
+
+        updateTree(): void;
+        getTrianglesInAABB(aabb: AABB, result: number[]): number[];
+        setScale(scale: Vec3): void
+        updateNormals(): void;
+        updateEdges(): void;
+        getEdgeVertex(edgeIndex: number, firstOrSecond: 0|1, vertexStore: Vec3): void;
+        getEdgeVector(edgeIndex: number, vectorStore: Vec3): void;
+        static computeNormal(va: Vec3, vb: Vec3, vc: Vec3, target: Vec3): void;
+        getVertex(i: number, out: Vec3): Vec3;
+        getWorldVertex(i: number, pos: Vec3, quat: Quaternion, out: Vec3): Vec3;
+        getTriangleVertices(i: number, a: Vec3, b: Vec3, c: Vec3): void;
+        getNormal(i: number, target: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target: Vec3): Vec3;
+        computeLocalAABB(aabb: Vec3): void;
+        updateAABB(): void;
+        updateBoundingSphereRadius(): number;
+        calculateWorldAABB(pos: Vec3, quat: Quaternion, min: Vec3, max: Vec3): void;
+        volume(): number;
+        createTorus(radius: number, tube: number, radialSegments: number, tubularSegments: number, arc: number): Trimesh;
+    }
+
     export class Shape {
 
         static types: {
@@ -957,17 +889,18 @@
             HEIGHTFIELD: number;
             PARTICLE: number;
             CYLINDER: number;
+            TRIMESH: number;
 
         }
 
-        id: number;
         type: number;
         boundingSphereRadius: number;
         collisionResponse: boolean;
+        id: number;
 
         updateBoundingSphereRadius(): number;
         volume(): number;
-        calculateLocalInertia(mass: number, target?: Vec3): Vec3;
+        calculateLocalInertia(mass: number, target: Vec3): Vec3;
 
     }
 
@@ -990,7 +923,7 @@
     }
 
     export class Solver {
-
+        iterations: number;
         equations: Equation[];
 
         solve(dy: number, world: World): number;
@@ -1050,7 +983,7 @@
 
     export class Vec3Pool extends Pool {
 
-        static defaults(options: Object, defaults: Object): Object;
+        type: any;
 
         constructObject(): Vec3;
 
@@ -1059,70 +992,12 @@
     export class NarrowPhase {
 
         contactPointPool: Pool[];
-        enableFrictionReduction: boolean;
         v3pool: Vec3Pool;
-
-        convexHeightfield(convexShape: Shape, hfShape: Heightfield, convexPos: Vec3, hfPos: Vec3, convexQuat: Quaternion, hfQuat: Quaternion, convexBody: Body, hfBody: Body): void;
-        convexConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        convexParticle(result: ContactEquation[], si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        convexTrimesh( result: ContactEquation[], si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        createContactEquation(bi: Body, bj: Body, si: Shape, sj: Shape, rsi: Shape, rsj: Shape): ContactEquation;
-        getContacts(p1: Body[], p2: Body[], world: World, result: ContactEquation[], oldcontacts: ContactEquation[]): void;
-        particlePlane( result: ContactEquation[], si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        particleSphere(result: ContactEquation[], si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        planeBox(result: ContactEquation[], si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        planeConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        planeTrimesh(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        sphereBox(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        sphereConvex(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        sphereHeightfield(sphereShape: Shape, hfShape: Heightfield, spherePos: Vec3, hfPos: Vec3, sphereQuat: Quaternion, hfQuat: Quaternion, sphereBody: Body, hfBody: Body): void;
-        spherePlane( si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        sphereSphere(si: Shape, sj: Shape, xi: Vec3, xj: Vec3, qi: Quaternion, qj: Quaternion, bi: Body, bj: Body): void;
-        sphereTrimesh(sphereShape: Shape, trimeshShape: Shape, spherePos: Vec3, trimeshPos: Vec3, sphereQuat: Quaternion, trimeshQuat: Quaternion, sphereBody: Body, trimeshBody: Body): void;
-
-    }
-
-    export interface IOctreeOptions {
-
-        root: Octree;
-        aabb: AABB;
-
-    }
-
-    export class OctreeNode {
-
-        aabb: AABB;
-        children: Octree[];
-        data: number[];
-        root: OctreeNode;
-
-    }
-
-    export class Octree extends OctreeNode {
-
-        maxDepth: number;
-
-        constructor(aabb: AABB, options: IOctreeOptions);
-
-        aabbQuery(aabb: AABB, result: Object[]): Object[];
-        insert(aabb: AABB, elementData: Object): boolean;
-        rayQuery(ray: Ray, treeTransform: Transform, result: Object[]): Object[];
-        removeEmptyNodes(): void;
-        subdivide(): void;
-
-    }
-
-    export interface IWorld {
-
-        collisisonFilterMask?: number;
-        collisionFilterGroup?: number;
-        skipBackfaces?: boolean;
-        checkCollisionResponse?: boolean;
 
     }
 
     export class World extends EventTarget {
-
+        iterations: number;
         dt: number;
         allowSleep: boolean;
         contacts: ContactEquation[];
@@ -1142,7 +1017,7 @@
         collisionMatrix: ArrayCollisionMatrix;
         collisionMatrixPrevious: ArrayCollisionMatrix;
         materials: Material[];
-        contactMaterials: ContactMaterial[];
+        contactmaterials: ContactMaterial[];
         contactMaterialTable: TupleDictionary;
         defaultMaterial: Material;
         defaultContactMaterial: ContactMaterial;
@@ -1158,23 +1033,16 @@
         addBodyEvent: IBodyEvent;
         removeBodyEvent: IBodyEvent;
 
-        addBody(body: Body): void;
-        addConstraint(c: Constraint): void;
-        addContactMaterial(cmat: ContactMaterial): void;
-        addEventListener(type: string, listener: Function): EventTarget;
-        addMaterial(m: Material): void;
-        clearForces(): void;
-        collisionMatrixTick(): void;
         getContactMaterial(m1: Material, m2: Material): ContactMaterial;
         numObjects(): number;
-        raycastAll(from: Vec3, to: Vec3, options: IWorld, callback: Function): boolean;
-        raycastAny(from: Vec3, to: Vec3, options: IWorld, result: RaycastResult): boolean;
-        raycastClosest(from: Vec3, to: Vec3, options: IWorld, result: RaycastResult): boolean;
+        collisionMatrixTick(): void;
+        addBody(body: Body): void;
+        addConstraint(c: Constraint): void;
+        removeConstraint(c: Constraint): void;
         rayTest(from: Vec3, to: Vec3, result: RaycastResult): void;
         remove(body: Body): void;
-        removeBody(body: Body): void;
-        removeConstraint(c: Constraint): void;
-        removeEventListener(type: string, listener: Function): EventTarget;
+        addMaterial(m: Material): void;
+        addContactMaterial(cmat: ContactMaterial): void;
         step(dy: number, timeSinceLastCalled?: number, maxSubSteps?: number): void;
 
     }
@@ -1188,16 +1056,17 @@
     export interface IBodyEvent extends IEvent {
 
         body: Body;
+        target: Body;
 
     }
 
-    export class Demo {
-
-        constructor( options: Object );
-
-        addScene( title: string, initfunc: Function ): void;
-        restartCurrentScene(): void;
-
+    export interface ICollisionEvent extends IBodyEvent {
+        contact: any;
     }
 
+}
+
+
+declare module "cannon" {
+    export = CANNON;
 }
